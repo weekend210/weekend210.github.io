@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>各范围内各影响因子的空间自回归分析</title>
+    <!-- 引入echarts库文件 -->
+    <script src="js/echarts.js"></script>
+    <!-- 引入jQuery库文件 -->
+    <script src="js/jquery-3.6.0.js"></script>
+    <style>
+        h1 { color: #ffffff; }
+        p {text-indent:2em;}
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            background-color: #000000;
+            padding: 20px;
+        }
+        .chart-container {
+            flex-basis: calc(30% - 10px); /* Each chart container takes 50% width with a 20px margin on each side */
+            margin: 5px;
+        }
+        .chart {
+            width: 500px;
+            height: 400px;
+        }
+        #description {
+            flex-basis: 30%; /* The text description spans 100% width */
+            margin: 20px;
+            font-size: 18px;
+            color: ghostwhite;
+        }
+    </style>
+</head>
+<body style="background-color:#000000;">
+    <h1 align="center">各范围内RAI和四种影响因子相关性分析</h1>
+    <div class="container">
+        <div id="description">
+            <p>根据相关性分析得出四个影响因子和两个指标之间的关系，系数绝对值越高，两者之间的相关性越强，因此可以从各影响因子和指标之间的相关系数分析每种因素的影响比例。</p>
+            <p>从右图可以明显看出，全国的RAI和高程平均值的相关性接近或小于-0.6，表明地形可能是影响我国RAI指标空间格局的主要因素，例如西北半壁由于海拔较高且人口较少，道路修建的难道更大、成本更高。</p>
+            <p>除此之外可以看出，人口和GDP与RAI均呈显著正相关，与NSRP呈负相关，表明人口越多、经济越发达的地区，享受道路交通服务的农村人口越多，同时，高程平均值和坡度标准差与RAI均呈显著负相关，表明我国海拔越高或地形起伏越大的地区，享受道路交通服务的农村人口占比越少。</p>
+        </div>
+
+<div class="chart-container">
+    <!-- 定义第一个图表显示区域 -->
+    <div class="chart" id="myDiv1"></div>
+</div>
+
+<div class="chart-container">
+    <!-- 定义第二个图表显示区域 -->
+    <div class="chart" id="myDiv2"></div>
+</div>
+
+<script type="text/javascript">
+    // 初始化第一个图表对象
+    var myChart_exForest1 = echarts.init(document.getElementById("myDiv1"));
+    // 初始化第二个图表对象
+    var myChart_exForest2 = echarts.init(document.getElementById("myDiv2"));
+
+    // 全国                                                                     //一共有三个图表：全国、东南半壁、西北半壁，要分别修改
+    var option1 = {
+        // 配置项内容
+        backgroundColor: '#000000',
+        title: {
+            text: '全国',
+            
+            textStyle:{
+                color: '#ffffff'                                                // ----> 图表标题字体的颜色
+            },
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params, ticket, callback) {
+                var htmlStr = '';
+                for(var i=0;i<params.length;i++){
+                    var param = params[i];
+                    var xName = param.name;//x轴的名称
+                    var seriesName = param.seriesName;//图例名称
+                    var value = param.value;//y轴值
+                    var color = param.color;//图例颜色
+
+                    if(i===0){
+                        htmlStr += xName + '<br/>';//x轴的名称
+                    }
+                    htmlStr +='<div>';
+                    if(seriesName === '额外信息')
+                    {
+                        htmlStr += '显著性水平：' + value;
+                        htmlStr += '<div style="border: 1px solid #ffb37d"></div>';                                                                         // ----> 额外信息中的横线颜色
+                    }
+                    else{
+                        // 正常显示的数据，走默认
+                        htmlStr += '<span style="margin-right:5px;display:inline-block;width:10px;height:10px;border-radius:5px;background-color:'+color+';"></span>';
+                        htmlStr += seriesName + '：' + value;
+                    }
+
+                    htmlStr += '</div>';
+                }
+                return htmlStr;
+            }
+        },
+        legend: {
+            data: ['负','正'],
+            bottom: "0px",
+            left:"300px",
+            textStyle:{
+                fontSize: 16,//字体大小
+                color: '#ffffff'//字体颜色
+            }
+        },
+        grid: {
+            left: '10%',
+            right: '10%',
+            bottom: '8%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'value',
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: '#ffffff',  //更改坐标轴文字颜色
+                        fontSize : 16      //更改坐标轴文字大小
+                    }
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    show: true
+                },
+                data: ['坡度标准差','高程平均值','GDP','人口'],
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        fontSize : 16,        //更改坐标轴文字大小
+                        color: function(param,index) {
+                            let colorList = ['#ffffff','#ffffff','#ffffff','#ffffff' ];             // ----> 坐标轴文字颜色
+                            return colorList[index]
+                        }
+                    }
+                },
+            }
+        ],
+        series: [
+            {
+                name: '正',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    show: true,
+                    position: 'insideTop'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#f0da49 '                                                    // ----> 数据为“正”的颜色
+                    },
+                },
+                data: ['-', '-' , 0.156 , 0.241]
+            },
+            {
+                name: '负',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    show: true,
+                    position: 'insideTop'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                itemStyle: {
+                    normal: {
+                        color:'#05f8d6'                                                    // ----> 数据为“负”的颜色
+                    },
+                },
+                data: [-0.329, -0.654,'-', '-']
+            },
+            {
+                name: '额外信息',
+                data: ['p<0.05', 'p<0.05','p<0.05', 'p<0.05'],
+                type: 'line'
+            },
+        ]
+
+    };
+
+    // 东南半壁
+    var option2 = {
+        // 配置项内容
+        backgroundColor: '#000000',
+        title: {
+            text: '东南半壁',
+            
+            textStyle:{
+                color: '#ffffff'                                                // ----> 图表标题字体的颜色
+            },
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params, ticket, callback) {
+                var htmlStr = '';
+                for(var i=0;i<params.length;i++){
+                    var param = params[i];
+                    var xName = param.name;//x轴的名称
+                    var seriesName = param.seriesName;//图例名称
+                    var value = param.value;//y轴值
+                    var color = param.color;//图例颜色
+
+                    if(i===0){
+                        htmlStr += xName + '<br/>';//x轴的名称
+                    }
+                    htmlStr +='<div>';
+                    if(seriesName === '额外信息')
+                    {
+                        htmlStr += '显著性水平：' + value;
+                        htmlStr += '<div style="border: 1px solid #ffb37d"></div>';                                                                         // ----> 额外信息中的横线颜色
+                    }
+                    else{
+                        // 正常显示的数据，走默认
+                        htmlStr += '<span style="margin-right:5px;display:inline-block;width:10px;height:10px;border-radius:5px;background-color:'+color+';"></span>';
+                        htmlStr += seriesName + '：' + value;
+                    }
+
+                    htmlStr += '</div>';
+                }
+                return htmlStr;
+            }
+        },
+        legend: {
+            data: ['负','正'],
+            bottom: "0px",
+            left:"300px",
+            textStyle:{
+                fontSize: 16,//字体大小
+                color: '#ffffff'//字体颜色
+            }
+        },
+        grid: {
+            left: '10%',
+            right: '10%',
+            bottom: '8%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'value',
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: '#ffffff',  //更改坐标轴文字颜色
+                        fontSize : 16      //更改坐标轴文字大小
+                    }
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    show: true
+                },
+                data: ['坡度标准差','高程平均值','GDP','人口'],
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        fontSize : 16,        //更改坐标轴文字大小
+                        color: function(param,index) {
+                            let colorList = ['#ffffff','#ffffff','#ffffff','#ffffff' ];             // ----> 坐标轴文字颜色
+                            return colorList[index]
+                        }
+                    }
+                },
+            }
+        ],
+        series: [
+            {
+                name: '正',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    show: true,
+                    position: 'insideTop'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                itemStyle: {
+                    normal: {
+                        color: '#f0da49'                                                    // ----> 数据为“正”的颜色
+                    },
+                },
+                data: ['-', '-' , 0.121 , 0.136]
+            },
+            {
+                name: '负',
+                type: 'bar',
+                stack: '总量',
+                label: {
+                    show: true,
+                    position: 'insideTop'
+                },
+                emphasis: {
+                    focus: 'series'
+                },
+                itemStyle: {
+                    normal: {
+                        color:'#05f8d6'                                                    // ----> 数据为“负”的颜色
+                    },
+                },
+                data: [-0.212, -0.232,'-', '-']
+            },
+            {
+                name: '额外信息',
+                data: ['p<0.05', 'p<0.05','p<0.05', 'p<0.05'],
+                type: 'line'
+            },
+        ]
+
+    };
+
+    // 使用相同的配置项和数据绘制三个图表
+    myChart_exForest1.setOption(option1);
+    myChart_exForest2.setOption(option2);
+</script>
+</body>
+</html>
