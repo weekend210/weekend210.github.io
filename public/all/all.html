@@ -2,45 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>全国范围内四种影响因素与RAI和NSRP两种指标的相关性分析</title>
+    <title>四种影响因素与RAI和NSRP两种指标的相关性分析</title>
     <!-- 引入echarts库文件 -->
     <script src="js/echarts.js"></script>
     <!-- 引入jQuery库文件 -->
     <script src="js/jquery-3.6.0.js"></script>
     <style>
-        h1 { color: #ffffff; }
-        p {text-indent:2em;}
+        h1 {                                    
+            color: #ffffff;                     /*标题文字颜色*/
+        }                
+        p.big{line-height: 1.8;}                /*文本行间距*/
+        p {
+            text-indent:0em;                    /*文本缩进距离*/
+        }                    
+
         .container {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: flex-start;
-            background-color: #000000;
-            padding: 20px;
+            background-color: #0e1116;      /*画布背景颜色*/
+            padding: 30px;                       /*画布大小*/
         }
         .chart-container {
-            flex-basis: calc(30% - 10px); /* Each chart container takes 50% width with a 20px margin on each side */
-            margin: 5px;
+            flex-basis: 30%;          /* Echart图表所占的页面宽度比例*/
+            margin: 20px;
         }
         .chart {
             width: 500px;
             height: 400px;
         }
         #description {
-            flex-basis: 30%; /* The text description spans 100% width */
-            margin: 20px;
+            flex-basis: 25%;                /* 文字所占的页面宽度比例 */
+            margin: 40px;
             font-size: 18px;
-            color: ghostwhite;
+            color: rgb(255, 255, 255);      /*正文文字颜色*/
         }
     </style>
 </head>
-<body style="background-color:#000000;">
-    <h1 align="center">全国范围内四种影响因素与RAI和NSRP两种指标的相关性分析</h1>
+<body style="background-color:#0e1116;">            <!--总背景颜色-->
+    <h1 align="center">四种影响因素与RAI和NSRP两种指标的相关性分析</h1>
     <div class="container">
         <div id="description">
-            <p>根据相关性分析得出四个影响因素和两个指标之间的关系，系数绝对值越高，两者之间的相关性越强，因此可以从各影响因素和指标之间的相关系数分析每种因素的影响比例。</p>
-            <p>从右图可以明显看出，全国的RAI和高程平均值的相关性接近或小于-0.6，表明地形可能是影响我国RAI指标空间格局的主要因素。例如，西北半壁由于海拔较高且人口较少，道路修建的难道更大、成本更高。</p>
-            <p>除此之外可以看出，人口和GDP与RAI均呈显著正相关，与NSRP呈负相关，表明人口越多、经济越发达的地区，享受道路交通服务的农村人口越多，同时，高程平均值和坡度标准差与RAI均呈显著负相关，表明我国海拔越高或地形起伏越大的地区，享受道路交通服务的农村人口占比越少。</p>
+            <p class="big">利用皮尔逊相关系数度量四种影响因素和两个指标之间的关系，根据相关性分析各因素对指标的影响程度。</p>
+            <p class="big">从右图可以看出，RAI和高程平均值的相关性接近或小于-0.6，<span style="color:#d5543d"><b>表明地形是影响我国RAI指标空间格局的主要因素</b></span>，地势起伏越大的地区，享受道路交通服务的农村人口越少。</p>
+            <p class="big">人口和GDP与RAI均呈<span style="color:#d5543d"><b>显著正相关，与NSRP呈负相关</b></span>，表明人口越多、经济越发达的地区，享受道路交通服务的农村人口越多。</p>
         </div>
 
 <div class="chart-container">
@@ -62,7 +68,7 @@
     // RAI
     var option1 = {
         // 配置项内容
-        backgroundColor: '#000000',
+        backgroundColor: '#0e1116',                                             // ----> 图表背景颜色
         title: {
             text: 'RAI',
             
@@ -92,7 +98,6 @@
                         htmlStr += '<div style="border: 1px solid #ffb37d"></div>';                                                                         // ----> 额外信息中的横线颜色
                     }
                     else{
-                        // 正常显示的数据，走默认
                         htmlStr += '<span style="margin-right:5px;display:inline-block;width:10px;height:10px;border-radius:5px;background-color:'+color+';"></span>';
                         htmlStr += seriesName + '：' + value;
                     }
@@ -187,7 +192,7 @@
             },
             {
                 name: '额外信息',
-                data: ['p<0.05', 'p<0.05','p<0.05', 'p<0.05'],
+                data: ['p<0.01', 'p<0.01','p<0.01', 'p<0.01'],
                 type: 'line'
             },
         ]
@@ -197,7 +202,7 @@
     // NSRP
     var option2 = {
         // 配置项内容
-        backgroundColor: '#000000',
+        backgroundColor: '#0e1116',                                             // ----> 图表背景颜色
         title: {
             text: 'NSRP',
             
@@ -227,7 +232,6 @@
                         htmlStr += '<div style="border: 1px solid #ffb37d"></div>';                                                                         // ----> 额外信息中的横线颜色
                     }
                     else{
-                        // 正常显示的数据，走默认
                         htmlStr += '<span style="margin-right:5px;display:inline-block;width:10px;height:10px;border-radius:5px;background-color:'+color+';"></span>';
                         htmlStr += seriesName + '：' + value;
                     }
@@ -300,7 +304,7 @@
                         color: '#cf4c3b'                                                    // ----> 数据为“正”的颜色
                     },
                 },
-                data: ['-', '-' , 0.121 , 0.136]
+                data: [0.247, 0.353 , '-' , '-']
             },
             {
                 name: '负',
@@ -318,18 +322,18 @@
                         color:'#3b7ec2'                                                    // ----> 数据为“负”的颜色
                     },
                 },
-                data: [-0.212, -0.232,'-', '-']
+                data: ['-', '-', -0.121, -0.087]
             },
             {
                 name: '额外信息',
-                data: ['p<0.05', 'p<0.05','p<0.05', 'p<0.05'],
+                data: ['p<0.01', 'p<0.01','p<0.01', 'p<0.01'],
                 type: 'line'
             },
         ]
 
     };
 
-    // 使用相同的配置项和数据绘制两个图表
+    // 使用配置项和数据绘制两个图表
     myChart_exForest1.setOption(option1);
     myChart_exForest2.setOption(option2);
 </script>
